@@ -3,6 +3,9 @@ using dotnet_rpg.Services.CharacterService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using dotnet_rpg.Services.WeaponService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +19,23 @@ builder.Services.AddDbContext<DataContext>(options => options.UseSqlServer(confi
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+  c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+  {
+    Description = "Standard Authorization header using the Bearer scheme. Example: \"bearer {token}\"",
+    In = ParameterLocation.Header,
+    Name = "Authorization",
+    Type = SecuritySchemeType.ApiKey
+  });
+  c.OperationFilter<SecurityRequirementsOperationFilter>();
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -31,6 +47,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     ValidateAudience = false
   };
 });
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddScoped<IWeaponService, WeaponService>();
+
 
 var app = builder.Build();
 
