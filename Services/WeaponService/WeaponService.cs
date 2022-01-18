@@ -29,9 +29,9 @@ namespace dotnet_rpg.Services.WeaponService
       var response = new ServiceResponse<GetCharacterDto>();
       try
       {
-        var character = await _context.Characters
+        var character = await _context.Characters!
         .FirstOrDefaultAsync(c => c.Id == newWeapon.CharacterId &&
-        c.User.Id == int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)));
+        c.User!.Id == int.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)));
 
         if (character == null)
         {
@@ -47,7 +47,7 @@ namespace dotnet_rpg.Services.WeaponService
           Character = character
         };
 
-        _context.Weapons.Add(weapon);
+        _context.Weapons!.Add(weapon);
         await _context.SaveChangesAsync();
 
         response.Data = _mapper.Map<GetCharacterDto>(character);

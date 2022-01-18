@@ -19,7 +19,7 @@ namespace dotnet_rpg.Controllers
     public async Task<ActionResult<ServiceResponse<int>>> Register(UserRegisterDto request)
     {
       var response = await _authRepo.Register(
-          new User { Username = request.Username }, request.Password
+          new User { Username = request.Username }, request.Password!
       );
       if (!response.Success)
       {
@@ -32,7 +32,7 @@ namespace dotnet_rpg.Controllers
     public async Task<ActionResult<ServiceResponse<string>>> Login(UserLoginDto request)
     {
       var response = await _authRepo.Login(
-          request.Username, request.Password
+          request.Username!, request.Password!
       );
       if (!response.Success)
       {
