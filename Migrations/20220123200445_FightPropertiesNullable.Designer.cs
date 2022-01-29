@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using dotnet_rpg.Data;
 
@@ -11,9 +12,10 @@ using dotnet_rpg.Data;
 namespace dotnet_rpg.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20220123200445_FightPropertiesNullable")]
+    partial class FightPropertiesNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,35 +47,34 @@ namespace dotnet_rpg.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Class")
+                    b.Property<int?>("Class")
                         .HasColumnType("int");
 
-                    b.Property<int>("Defeats")
+                    b.Property<int?>("Defeats")
                         .HasColumnType("int");
 
-                    b.Property<int>("Defense")
+                    b.Property<int?>("Defense")
                         .HasColumnType("int");
 
-                    b.Property<int>("Fights")
+                    b.Property<int?>("Fights")
                         .HasColumnType("int");
 
-                    b.Property<int>("HitPoints")
+                    b.Property<int?>("HitPoints")
                         .HasColumnType("int");
 
-                    b.Property<int>("Intelligence")
+                    b.Property<int?>("Intelligence")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Strength")
+                    b.Property<int?>("Strength")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int?>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Victories")
+                    b.Property<int?>("Victories")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -91,11 +92,10 @@ namespace dotnet_rpg.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("Damage")
+                    b.Property<int?>("Damage")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -132,21 +132,12 @@ namespace dotnet_rpg.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<byte[]>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(max)")
-                        .HasDefaultValue("Player");
-
                     b.Property<string>("Username")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -162,20 +153,20 @@ namespace dotnet_rpg.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CharacterId")
+                    b.Property<int?>("CharacterId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Damage")
+                    b.Property<int?>("Damage")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CharacterId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[CharacterId] IS NOT NULL");
 
                     b.ToTable("Weapons");
                 });
@@ -199,9 +190,7 @@ namespace dotnet_rpg.Migrations
                 {
                     b.HasOne("dotnet_rpg.Models.User", "User")
                         .WithMany("Characters")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -210,17 +199,14 @@ namespace dotnet_rpg.Migrations
                 {
                     b.HasOne("dotnet_rpg.Models.Character", "Character")
                         .WithOne("Weapon")
-                        .HasForeignKey("dotnet_rpg.Models.Weapon", "CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("dotnet_rpg.Models.Weapon", "CharacterId");
 
                     b.Navigation("Character");
                 });
 
             modelBuilder.Entity("dotnet_rpg.Models.Character", b =>
                 {
-                    b.Navigation("Weapon")
-                        .IsRequired();
+                    b.Navigation("Weapon");
                 });
 
             modelBuilder.Entity("dotnet_rpg.Models.User", b =>

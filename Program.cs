@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using dotnet_rpg.Services.WeaponService;
+using dotnet_rpg.Services.FightService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,7 +51,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddScoped<IWeaponService, WeaponService>();
-
+builder.Services.AddScoped<IFightService, FightService>();
 
 var app = builder.Build();
 
