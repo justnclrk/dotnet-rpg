@@ -91,7 +91,7 @@ namespace dotnet_rpg.Data
       {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new Claim(ClaimTypes.Name, user.Username!),
-        new Claim(ClaimTypes.Role, user.Role)
+        new Claim(ClaimTypes.Role, user.Role!)
       };
 
       //get token from app settings

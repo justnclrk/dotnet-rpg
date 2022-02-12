@@ -30,16 +30,16 @@ namespace dotnet_rpg.Services.FightService
         var opponent = await _context.Characters!
         .FirstOrDefaultAsync(character => character.Id == request.OpponentId);
 
-        int damage = DoWeaponAttack(attacker, opponent);
+        int damage = DoWeaponAttack(attacker, opponent!);
 
-        if (opponent.HitPoints <= 0)
+        if (opponent!.HitPoints <= 0)
           response.Message = $"{opponent.Name} has been defeated!";
 
         await _context.SaveChangesAsync();
 
         response.Data = new AttackResultDto
         {
-          Attacker = attacker.Name,
+          Attacker = attacker!.Name,
           AttackerHP = attacker.HitPoints,
           Opponent = opponent.Name,
           OpponentHP = opponent.HitPoints,
@@ -56,7 +56,7 @@ namespace dotnet_rpg.Services.FightService
 
     private static int DoWeaponAttack(Character? attacker, Character opponent)
     {
-      int damage = attacker.Weapon.Damage + (new Random().Next(attacker.Strength)); // take the weapon damage and add random number between 0 and character strength
+      int damage = attacker!.Weapon!.Damage + (new Random().Next(attacker.Strength)); // take the weapon damage and add random number between 0 and character strength
       damage -= new Random().Next(opponent!.Defense!); // subtract opponent defense from damage to get actual damage!
 
       if (damage > 0)
@@ -77,7 +77,7 @@ namespace dotnet_rpg.Services.FightService
         var opponent = await _context.Characters!
         .FirstOrDefaultAsync(character => character.Id == request.OpponentId);
 
-        var skill = attacker.Skills.FirstOrDefault(skill => skill.Id == request.SkillId);
+        var skill = attacker!.Skills!.FirstOrDefault(skill => skill.Id == request.SkillId);
 
         if (skill == null)
         {
@@ -86,9 +86,9 @@ namespace dotnet_rpg.Services.FightService
           return response;
         }
 
-        int damage = DoSkillAttack(attacker, opponent, skill);
+        int damage = DoSkillAttack(attacker, opponent!, skill);
 
-        if (opponent.HitPoints <= 0)
+        if (opponent!.HitPoints <= 0)
           response.Message = $"{opponent.Name} has been defeated!";
 
         await _context.SaveChangesAsync();
@@ -112,7 +112,7 @@ namespace dotnet_rpg.Services.FightService
 
     private static int DoSkillAttack(Character? attacker, Character opponent, Skill? skill)
     {
-      int damage = skill.Damage + (new Random().Next(attacker.Intelligence)); // take the skill damage and add random number between 0 and character intelligence
+      int damage = skill!.Damage + (new Random().Next(attacker!.Intelligence)); // take the skill damage and add random number between 0 and character intelligence
       damage -= new Random().Next(opponent!.Defense!); // subtract opponent defense from damage to get actual damage!
 
       if (damage > 0)
@@ -131,7 +131,7 @@ namespace dotnet_rpg.Services.FightService
         var characters = await _context.Characters!
         .Include(c => c.Weapon)
         .Include(c => c.Skills)
-        .Where(c => request.CharacterIds.Contains(c.Id)).ToListAsync();
+        .Where(c => request!.CharacterIds!.Contains(c.Id)).ToListAsync();
 
         bool defeated = false;
         while (!defeated)
@@ -147,13 +147,13 @@ namespace dotnet_rpg.Services.FightService
             bool useWeapon = new Random().Next(2) == 0;
             if (useWeapon)
             {
-              attackedUsed = attacker.Weapon.Name;
+              attackedUsed = attacker!.Weapon!.Name!;
               damage = DoWeaponAttack(attacker, opponent);
             }
             else
             {
-              var skill = attacker.Skills[new Random().Next(attacker.Skills.Count)];
-              attackedUsed = skill.Name;
+              var skill = attacker!.Skills![new Random().Next(attacker.Skills.Count)];
+              attackedUsed = skill!.Name!;
               damage = DoSkillAttack(attacker, opponent, skill);
             }
 

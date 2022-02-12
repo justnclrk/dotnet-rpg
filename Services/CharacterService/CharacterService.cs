@@ -48,7 +48,7 @@ namespace dotnet_rpg.Services.CharacterService
       var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
       var dbCharacters =
         GetUserRole().Equals("Admin") ?
-        await _context.Characters.ToListAsync() :
+        await _context.Characters!.ToListAsync() :
         await _context.Characters!.Where(character => character.User!.Id == GetUserId()).ToListAsync();
       serviceResponse.Data = dbCharacters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
       return serviceResponse;
